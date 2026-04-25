@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人类联邦官方网站 | Commonwealth of Man</title>
+    <style>
+        /* 全局及重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { 
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+            background-color: #050505; 
+            color: #e0e0e0; 
+            overflow-x: hidden; 
+        }
+
+        /* 滚动捕捉容器 (整页切换效果) */
+        .scroll-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* 顶部政府导航栏 */
+        .gov-nav {
+            position: fixed;
+            top: 0; width: 100%;
+            background: rgba(15, 15, 15, 0.95);
+            border-bottom: 2px solid #8b0000;
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .gov-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #d4af37;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .gov-nav .status {
+            font-size: 0.85rem;
+            color: #aaa;
+            text-align: right;
+        }
+        .status span { color: #4caf50; font-weight: bold; }
+
+        /* 通用板块设置 */
+        .section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 遮罩层 */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 1;
+        }
+
+        /* 内容层 */
+        .content {
+            position: relative;
+            z-index: 2;
+            width: 80%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        /* 动画类 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1), transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 板块 1：核心理念 --- */
+        #section1 {
+            /* 使用多重背景：利用CSS径向渐变模拟出三个太阳，叠加在用户提供的旗帜背景上 */
+            background: 
+                radial-gradient(circle at 15% 20%, rgba(255, 230, 100, 0.9) 0%, rgba(255, 200, 50, 0.4) 10%, transparent 30%),
+                radial-gradient(circle at 85% 35%, rgba(255, 100, 50, 0.8) 0%, rgba(200, 50, 20, 0.4) 15%, transparent 40%),
+                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 1) 0%, rgba(200, 200, 255, 0.5) 5%, transparent 20%),
+                url('b3fb43166d224f4a20a4d13280bc87529822720e7bf4.jpg') center/cover no-repeat;
+        }
+        #section1 .overlay {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+        }
+        .title-main {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+        .subtitle {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        .lore-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #ccc;
+            background: rgba(20, 20, 20, 0.7);
+            padding: 30px;
+            border-left: 5px solid #8b0000;
+            margin: 0 auto;
+            max-width: 800px;
+            text-align: left;
+        }
+        .warning-text {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        /* --- 板块 2：政务与举报窗口 --- */
+        #section2 {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+        #section2::before {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 10px);
+            z-index: 0;
+        }
+        .cards-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .card {
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid #333;
+            border-top: 4px solid #8b0000;
+            flex: 1;
+            padding: 40px 30px;
+            text-align: left;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.4);
+            border-color: #8b0000;
+        }
+        .card h3 {
+            font-size: 1.8rem;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+        .card p {
+            font-size: 1rem;
+            color: #bbb;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            min-height: 100px;
+        }
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            background: #8b0000;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #d4af37; color: #000; }
+        .sarcasm { font-size: 0.8rem; color: #666; display: block; margin-top: 10px; text-align: center; }
+
+        /* --- 板块 3：武力威慑 --- */
+        #section3 {
+            background: url('20260103020223_1.jpg') center/cover no-repeat;
+            background-attachment: fixed; /* 视差效果 */
+        }
+        .glitch-text {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px #8b0000, -2px -2px 0px #d4af37;
+            margin-bottom: 20px;
+        }
+        .manifesto {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e0e0e0;
+            margin-bottom: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border: 2px solid #8b0000;
+        }
+        .footer-note {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #777;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="gov-nav">
+        <div class="logo">
+            <div style="width: 20px; height: 20px; background: #8b0000; transform: rotate(45deg);"></div>
+            人类联邦政府网 (CoM-Gov)
+        </div>
+        <div class="status">
+            当前网络安全等级: <span style="color: #ff4444;">最高戒备</span> | 
+            您的公民信用点: <span>104,200</span> |
+            真理部监控状态: <span>全天候运作</span>
+        </div>
+    </nav>
+
+    <div class="scroll-container">
+
+        <section id="section1" class="section">
+            <div class="overlay"></div>
+            <div class="content fade-in">
+                <h1 class="title-main">人类至上</h1>
+                <h2 class="subtitle">生存，不惜一切代价。</h2>
+                <div class="lore-text">
+                    <p>自“菊花号”（Chrysanthemum）降落在充满敌意且严酷的天津星（Unity）以来，在这三阳当空的炽热苍穹之下，无数同胞向着联邦不朽的旗帜致以最崇高的敬礼。</p>
+                    <br>
+                    <p>我们曾被遗弃在星海的孤岛，但我们幸存了下来。人类联邦是人类物种延续的最坚强后盾！异星的深渊中充满了未知的恶意与低劣的物种，但人类扩张的步伐绝不停止。为了人类的纯粹、繁荣与绝对的统治权，我们将不择手段地前进。</p>
+                </div>
+                <p class="warning-text">⚠️ 警告：系统检测到您当前心率波动异常。不爱国的情绪波动将被记录在案。在此页面停留时间过短将被视为叛国罪的初步迹象。</p>
+            </div>
+        </section>
+
+        <section id="section2" class="section">
+            <div class="content">
+                <h2 style="font-size: 3rem; margin-bottom: 20px; color: #fff;" class="fade-in">联邦公民服务终端</h2>
+                <p style="color: #888; margin-bottom: 40px;" class="fade-in">履行您的义务。享受被管理的自由。</p>
+                
+                <div class="cards-container">
+                    <div class="card fade-in" style="transition-delay: 0.1s;">
+                        <h3>联系最高理事会</h3>
+                        <p>你的意见对联邦至关重要！如果你的建议足够有价值，它将会直接出现在联邦大元帅（Grand Marshal）的办公桌上。大元帅重视每一个纯正且忠诚的人类。</p>
+                        <button class="btn" onclick="alert('错误代码 403：您的公民阶级不足以提交建设性意见。您的不满情绪已自动同步至所在辖区的民主思想教导员。')">提交意见 (需扣除50点信用点)</button>
+                        <span class="sarcasm">注：批评现行政策将被视为“自愿放弃公民身份”。</span>
+                    </div>
+
+                    <div class="card fade-in" style="transition-delay: 0.2s;">
+                        <h3>为了人类联邦</h3>
+                        <p>Prove to yourself that you have the strength and the courage to be free. Join... the <strong>帝国海军 (Imperial Navy)</strong>。用炽热的等离子武器向银河系播撒属于人类的真理！</p>
+                        <button class="btn" onclick="alert('恭喜！您的指纹已在点击按钮的瞬间被采集，入伍契约已签订。新兵运输船将在15分钟后轰炸并接管您的住宅。为了联邦！')">立即参军 (系统推荐/强制)</button>
+                        <span class="sarcasm">预计存活率：光荣！抚恤金将以九折优惠券形式发放。</span>
+                    </div>
+
+                    <div class="card fade-in" style="transition-delay: 0.3s;">
+                        <h3>检举人类之敌</h3>
+                        <p>发现了可憎的异形？遇到了同情外星人的叛徒？或者听到了邻居抱怨每日配给的合成淀粉太难吃？立刻向真理部举报！联邦的纯洁需要鲜血来洗涤。</p>
+                        <button class="btn" onclick="alert('感谢您的举报。一支地狱伞兵突击队已定位您提供的坐标，并申请了轨道激光打击。为了确保彻底净化，包含您所在街区在内的方圆5公里已被划为火力覆盖区。感谢您的牺牲！')">向真理部匿名举报</button>
+                        <span class="sarcasm">举报直系亲属可获得额外的“真实肉类”配给（限额10克）。</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section3" class="section">
+            <div class="overlay" style="background: rgba(0,0,0,0.4);"></div>
+            <div class="content fade-in">
+                <h1 class="glitch-text">荡平一切人类之敌</h1>
+                <div class="manifesto">
+                    我们将从混沌之中建立秩序！
+                </div>
+                <p style="font-size: 1.3rem; color: #fff; text-shadow: 1px 1px 5px #000; max-width: 900px; margin: 0 auto; line-height: 1.8;">
+                    注视这支遮天蔽日的无敌舰队吧！每一艘战舰都承载着全人类的愤怒与意志。<br>
+                    我们将粉碎那些低等外星文明的脆弱护盾，把他们的母星化为燃烧的玻璃化废土。<br>
+                    <strong>记住，公民们：和平，永远只是重火力轨道轰炸后的副产品！</strong>
+                </p>
+            </div>
+            <div class="footer-note">
+                版权所有 © 2999 人类联邦真理部与最高理事会。未经授权的复制、浏览、或质疑本网页内容，将被处以无限制的轨道轰炸。Sweet Liberty!
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // 元素露出10%即触发动画
+            });
+
+            const hiddenElements = document.querySelectorAll('.fade-in');
+            hiddenElements.forEach((el) => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
